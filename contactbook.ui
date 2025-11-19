@@ -24,10 +24,12 @@ QTableWidget {
     background-color: white;
     gridline-color: #e0e0e0;
     font-size: 12pt;
+    color: #000000;
 }
 
 QTableWidget::item {
     padding: 8px;
+    color: #000000;
 }
 
 QTableWidget::item:selected {
@@ -51,6 +53,7 @@ QLineEdit {
     background-color: white;
     font-size: 11pt;
     min-height: 30px;
+    color: #000000;
 }
 
 QLineEdit:focus {
@@ -60,7 +63,7 @@ QLineEdit:focus {
 QLabel {
     font-size: 11pt;
     font-weight: bold;
-    color: #333333;
+    color: #000000;
 }
 
 QPushButton {
@@ -132,7 +135,7 @@ QPushButton#insertButton:pressed {
       <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
      <property name="styleSheet">
-      <string notr="true">font-size: 18pt; font-weight: bold; color: #2c3e50; padding: 10px;</string>
+      <string notr="true">font-size: 18pt; font-weight: bold; color: #000000; padding: 10px;</string>
      </property>
     </widget>
    </item>
@@ -163,13 +166,14 @@ QPushButton#insertButton:pressed {
     margin-top: 10px;
     padding-top: 10px;
     background-color: white;
+    color: #000000;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top center;
     padding: 5px 10px;
-    color: #2c3e50;
+    color: #000000;
 }</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
@@ -234,6 +238,19 @@ QGroupBox::title {
      </layout>
     </widget>
    </item>
+    <item>
+     <widget class="QLabel" name="statusLabel">
+      <property name="text">
+       <string>就緒 ✓</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 10pt; color: #000000; padding: 5px;</string>
+      </property>
+     </widget>
+    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="spacing">
