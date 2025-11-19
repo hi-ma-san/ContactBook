@@ -19,6 +19,9 @@ ui_*.h
 Makefile
 Makefile.*
 
+# Built executable
+ContactBook
+
 # Build directories
 build/
 build-*/
