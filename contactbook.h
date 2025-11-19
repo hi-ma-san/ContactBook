@@ -32,5 +32,6 @@ private slots:
 
 private:
     Ui::ContactBook *ui; //用指標指向有人機介面的ContactBook
+    void updateStatus(const QString &message, int duration = 3000);
 };
 #endif // CONTACTBOOK_H

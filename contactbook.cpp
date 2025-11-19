@@ -6,6 +6,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
+#include <QShortcut>
+#include <QKeySequence>
+#include <QTimer>
 
 
 QString mFileName = "./output.txt";
@@ -57,11 +60,33 @@ ContactBook::ContactBook(QWidget *parent)
     ui -> lineEdit_4 -> setPlaceholderText("請輸入電話");
     
     // 設定按鈕提示
-    ui -> insertButton -> setToolTip("將輸入的資料新增到表格中");
-    ui -> pushButton -> setToolTip("從CSV或TXT檔案匯入資料");
-    ui -> exportButton -> setToolTip("將表格資料匯出為CSV或TXT檔案");
-    ui -> deleteButton -> setToolTip("刪除選中的資料列");
-    ui -> exitButton -> setToolTip("結束程式");
+    ui -> insertButton -> setToolTip("將輸入的資料新增到表格中 (快捷鍵: Ctrl+N)");
+    ui -> pushButton -> setToolTip("從CSV或TXT檔案匯入資料 (快捷鍵: Ctrl+I)");
+    ui -> exportButton -> setToolTip("將表格資料匯出為CSV或TXT檔案 (快捷鍵: Ctrl+E)");
+    ui -> deleteButton -> setToolTip("刪除選中的資料列 (快捷鍵: Delete)");
+    ui -> exitButton -> setToolTip("結束程式 (快捷鍵: Ctrl+Q)");
+    
+    // 設定鍵盤快捷鍵
+    QShortcut *insertShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_N), this);
+    connect(insertShortcut, &QShortcut::activated, ui->insertButton, &QPushButton::click);
+    
+    QShortcut *importShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_I), this);
+    connect(importShortcut, &QShortcut::activated, ui->pushButton, &QPushButton::click);
+    
+    QShortcut *exportShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_E), this);
+    connect(exportShortcut, &QShortcut::activated, ui->exportButton, &QPushButton::click);
+    
+    QShortcut *deleteShortcut = new QShortcut(QKeySequence::Delete, this);
+    connect(deleteShortcut, &QShortcut::activated, ui->deleteButton, &QPushButton::click);
+    
+    QShortcut *exitShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Q), this);
+    connect(exitShortcut, &QShortcut::activated, ui->exitButton, &QPushButton::click);
+    
+    // 設定Enter鍵在lineEdit中按下時觸發新增
+    connect(ui->lineEdit, &QLineEdit::returnPressed, ui->insertButton, &QPushButton::click);
+    connect(ui->lineEdit_2, &QLineEdit::returnPressed, ui->insertButton, &QPushButton::click);
+    connect(ui->lineEdit_3, &QLineEdit::returnPressed, ui->insertButton, &QPushButton::click);
+    connect(ui->lineEdit_4, &QLineEdit::returnPressed, ui->insertButton, &QPushButton::click);
 }
 
 ContactBook::~ContactBook()
@@ -89,6 +114,12 @@ void ContactBook::on_insertButton_clicked()
     inputCol2 = new QTableWidgetItem(className);
     inputCol3 = new QTableWidgetItem(name);
     inputCol4 = new QTableWidgetItem(phone);
+    
+    // 設定文字顏色為黑色
+    inputCol1->setForeground(QBrush(QColor(0, 0, 0)));
+    inputCol2->setForeground(QBrush(QColor(0, 0, 0)));
+    inputCol3->setForeground(QBrush(QColor(0, 0, 0)));
+    inputCol4->setForeground(QBrush(QColor(0, 0, 0)));
 
     //添加在哪一個新列 row_index 從0開始
     int cur_row = ui-> tableW -> rowCount();
@@ -109,7 +140,7 @@ void ContactBook::on_insertButton_clicked()
     // 將焦點設回第一個輸入欄位
     ui->lineEdit->setFocus();
     
-    QMessageBox::information(this, "成功", "資料已新增！");
+    updateStatus("✓ 資料已新增成功！");
 }
 
 void ContactBook::on_exportButton_clicked()
@@ -142,6 +173,7 @@ void ContactBook::on_exportButton_clicked()
         saveFile += "\n";
     }
     Write(mFileName, saveFile);
+    updateStatus("✓ 資料已成功匯出！");
     QMessageBox::information(this, "成功", "資料已成功匯出！");
 }
 
@@ -178,6 +210,12 @@ void ContactBook::on_pushButton_clicked()
             QTableWidgetItem *col3 = new QTableWidgetItem(fields[2].trimmed());
             QTableWidgetItem *col4 = new QTableWidgetItem(fields[3].trimmed());
             
+            // 設定文字顏色為黑色
+            col1->setForeground(QBrush(QColor(0, 0, 0)));
+            col2->setForeground(QBrush(QColor(0, 0, 0)));
+            col3->setForeground(QBrush(QColor(0, 0, 0)));
+            col4->setForeground(QBrush(QColor(0, 0, 0)));
+            
             int cur_row = ui -> tableW -> rowCount();
             ui -> tableW -> insertRow(cur_row);
             ui -> tableW -> setItem(cur_row, 0, col1);
@@ -190,6 +228,7 @@ void ContactBook::on_pushButton_clicked()
     }
     
     mFile.close();
+    updateStatus(QString("✓ 已成功匯入 %1 筆資料！").arg(importedCount));
     QMessageBox::information(this, "成功", QString("已匯入 %1 筆資料！").arg(importedCount));
 }
 
@@ -213,7 +252,7 @@ void ContactBook::on_deleteButton_clicked()
     if (reply == QMessageBox::Yes)
     {
         ui -> tableW -> removeRow(currentRow);
-        QMessageBox::information(this, "成功", "資料已刪除！");
+        updateStatus("✓ 資料已刪除成功！");
     }
 }
 
@@ -227,4 +266,15 @@ void ContactBook::on_exitButton_clicked()
     {
         close();
     }
+}
+
+void ContactBook::updateStatus(const QString &message, int duration)
+{
+    ui->statusLabel->setText(message);
+    ui->statusLabel->setStyleSheet("font-size: 10pt; color: #27ae60; padding: 5px; font-weight: bold;");
+    
+    QTimer::singleShot(duration, this, [this]() {
+        ui->statusLabel->setText("就緒 ✓");
+        ui->statusLabel->setStyleSheet("font-size: 10pt; color: #000000; padding: 5px;");
+    });
 }
