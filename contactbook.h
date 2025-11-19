@@ -24,6 +24,10 @@ private slots:
 
     void on_exportButton_clicked();
 
+    void on_pushButton_clicked();
+
+    void on_deleteButton_clicked();
+
     void on_exitButton_clicked();
 
 private:
