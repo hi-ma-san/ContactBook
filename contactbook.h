@@ -2,6 +2,7 @@
 #define CONTACTBOOK_H
 
 #include <QDialog>
+#include <QTableWidgetItem>
 
 
 QT_BEGIN_NAMESPACE
@@ -18,6 +19,11 @@ public:
     ContactBook(QWidget *parent = nullptr);
     ~ContactBook();
 
+    void saveFile();
+
+    bool isModified = false; //修改檢查
+    bool editingLock = false;
+
 private slots:
 
     void on_insertButton_clicked();
@@ -25,6 +31,10 @@ private slots:
     void on_exportButton_clicked();
 
     void on_exitButton_clicked();
+
+    void on_importButton_clicked();
+
+    void on_tableW_itemChanged(QTableWidgetItem *item);
 
 private:
     Ui::ContactBook *ui; //用指標指向有人機介面的ContactBook
